@@ -1,0 +1,9 @@
+[Bb]in/
+[Oo]bj/
+
+.idea/
+.vs/
+*.user
+
+*.log
+.DS_Store
