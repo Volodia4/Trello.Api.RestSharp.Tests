@@ -43,7 +43,24 @@ public class BoardTests : BaseTest
         Assert.That(retrievedBoard.Name, Is.EqualTo(boardName), "Retrieved board name does not match");
         Assert.That(retrievedBoard.Id, Is.EqualTo(_createdBoardId), "Retrieved board id does not match");
         
-        TestContext.WriteLine($"Board {_createdBoardId} retrieved");
+        TestContext.WriteLine($"Board {retrievedBoard.Name} found");
+    }
+
+    [Test]
+    public async Task UpdateBoard_Successfully()
+    {
+        string boardName =  "AutoTest_Board_" + DateTime.Now.Ticks;
+        var createdBoard = await _boardClient.CreateBoard(boardName);
+        
+        _createdBoardId = createdBoard.Id;
+        
+        string newBoardName =  "AutoTest_Board_Changed_" + DateTime.Now.Ticks;
+        var changedBoard = await _boardClient.UpdateBoard(_createdBoardId, newBoardName);
+        
+        Assert.That(changedBoard.Name, Is.EqualTo(newBoardName), "Changed board name does not match");
+        Assert.That(changedBoard.Id, Is.EqualTo(_createdBoardId), "Changed board id does not match");
+        
+        TestContext.WriteLine($"Board updated. New name: {changedBoard.Name}");
     }
     
     [TearDown]

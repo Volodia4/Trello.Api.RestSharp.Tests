@@ -37,9 +37,20 @@ public class BoardClient
         return response.Data;
     }
 
+    public async Task<BoardModel> UpdateBoard(string boardId, string newName)
+    {
+        var request = new RestRequest($"/1/boards/{boardId}", Method.Put);
+        request.AddQueryParameter("name", newName);
+        request.AddQueryParameter("key", _key);
+        request.AddQueryParameter("token", _token);
+        
+        var response = await _client.ExecuteAsync<BoardModel>(request);
+        return response.Data;
+    }
+
     public async Task<System.Net.HttpStatusCode> DeleteBoard(string boardId)
     {
-        var request = new RestRequest($"1/boards/{boardId}", Method.Delete);
+        var request = new RestRequest($"/1/boards/{boardId}", Method.Delete);
         request.AddQueryParameter("key",  _key);
         request.AddQueryParameter("token",  _token);
         
