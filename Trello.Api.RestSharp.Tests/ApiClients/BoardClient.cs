@@ -16,78 +16,41 @@ public class BoardClient
         _token = token;
     }
 
-    public async Task<BoardModel> CreateBoard(string name)
+    public async Task<RestResponse<BoardModel>> CreateBoard(string name, string customToken = null)
     {
         var request = new RestRequest("/1/boards", Method.Post);
         request.AddQueryParameter("name", name);
         request.AddQueryParameter("key", _key);
-        request.AddQueryParameter("token", _token);
+        request.AddQueryParameter("token", customToken ?? _token);
         
-        var response = await _client.ExecuteAsync<BoardModel>(request);
-        return response.Data;
+        return await _client.ExecuteAsync<BoardModel>(request);
     }
 
-    public async Task<System.Net.HttpStatusCode> CreateBoard_WrongToken(string name)
-    {
-        var request = new RestRequest("/1/boards", Method.Post);
-        request.AddQueryParameter("name", name);
-        request.AddQueryParameter("key", _key);
-        request.AddQueryParameter("token", "wrong_token");
-        
-        var response = await _client.ExecuteAsync<BoardModel>(request);
-        return response.StatusCode;
-    }
-
-    public async Task<System.Net.HttpStatusCode> CreateBoard_EmptyName()
-    {
-        var request = new RestRequest("/1/boards", Method.Post);
-        request.AddQueryParameter("name", null);
-        request.AddQueryParameter("key", _key);
-        request.AddQueryParameter("token", _token);
-        
-        var response = await _client.ExecuteAsync<BoardModel>(request);
-        return response.StatusCode;
-        
-    }
-
-    public async Task<BoardModel> GetBoard(string boardId)
+    public async Task<RestResponse<BoardModel>> GetBoard(string boardId)
     {
         var request = new RestRequest($"/1/boards/{boardId}", Method.Get);
         request.AddQueryParameter("key", _key);
         request.AddQueryParameter("token", _token);
         
-        var response = await _client.ExecuteAsync<BoardModel>(request);
-        return response.Data;
+        return await _client.ExecuteAsync<BoardModel>(request);
     }
 
-    public async Task<System.Net.HttpStatusCode> GetBoardWrongId()
-    {
-        var request = new RestRequest("/1/boards/111122223333444455556666", Method.Get);
-        request.AddQueryParameter("key", _key);
-        request.AddQueryParameter("token", _token);
-        
-        var response = await _client.ExecuteAsync<BoardModel>(request);
-        return response.StatusCode;
-    }
-
-    public async Task<BoardModel> UpdateBoard(string boardId, string newName)
+    public async Task<RestResponse<BoardModel>> UpdateBoard(string boardId, string newName, string customToken = null)
     {
         var request = new RestRequest($"/1/boards/{boardId}", Method.Put);
         request.AddQueryParameter("name", newName);
         request.AddQueryParameter("key", _key);
-        request.AddQueryParameter("token", _token);
+        request.AddQueryParameter("token", customToken ?? _token);
         
-        var response = await _client.ExecuteAsync<BoardModel>(request);
-        return response.Data;
+        return await _client.ExecuteAsync<BoardModel>(request);
     }
 
-    public async Task<System.Net.HttpStatusCode> DeleteBoard(string boardId)
+    public async Task<RestResponse> DeleteBoard(string boardId, string customToken = null)
     {
         var request = new RestRequest($"/1/boards/{boardId}", Method.Delete);
-        request.AddQueryParameter("key",  _key);
-        request.AddQueryParameter("token",  _token);
+        request.AddQueryParameter("key", _key);
+        request.AddQueryParameter("token", customToken ?? _token);
         
-        var response = await _client.ExecuteAsync(request);
-        return response.StatusCode;
+        return await _client.ExecuteAsync(request);
     }
 }
