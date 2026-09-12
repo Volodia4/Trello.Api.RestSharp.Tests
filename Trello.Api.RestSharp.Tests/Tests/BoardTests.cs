@@ -31,6 +31,27 @@ public class BoardTests : BaseTest
     }
 
     [Test]
+    public async Task CreateBoard_WrongToken()
+    {
+        string boardName =  "AutoTest_Board_Wrong_" + DateTime.Now.Ticks;
+        var wrongBoardStatus = await _boardClient.CreateBoard_WrongToken(boardName);
+        
+        Assert.That(wrongBoardStatus, Is.EqualTo(HttpStatusCode.Unauthorized));
+        
+        TestContext.WriteLine("Success. Board with wrong token was not created");
+    }
+
+    [Test]
+    public async Task CreateBoard_EmptyName()
+    {
+        var wrongBoardStatus = await _boardClient.CreateBoard_EmptyName();
+        
+        Assert.That(wrongBoardStatus, Is.EqualTo(HttpStatusCode.BadRequest));
+        
+        TestContext.WriteLine("Success. Board with empty name was not created");
+    }
+
+    [Test]
     public async Task GetBoard_Successfully()
     {
         string boardName =  "AutoTest_Board_" + DateTime.Now.Ticks;
@@ -44,6 +65,16 @@ public class BoardTests : BaseTest
         Assert.That(retrievedBoard.Id, Is.EqualTo(_createdBoardId), "Retrieved board id does not match");
         
         TestContext.WriteLine($"Board {retrievedBoard.Name} found");
+    }
+
+    [Test]
+    public async Task GetBoard_WrongId()
+    {
+        var wrongRetrievedBoardStatus = await _boardClient.GetBoardWrongId();
+        
+        Assert.That(wrongRetrievedBoardStatus,  Is.EqualTo(HttpStatusCode.NotFound));
+        
+        TestContext.WriteLine("Success. Board with wrong id was not found");
     }
 
     [Test]
