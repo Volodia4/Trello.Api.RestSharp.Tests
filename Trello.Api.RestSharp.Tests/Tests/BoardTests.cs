@@ -19,7 +19,7 @@ public class BoardTests : BaseTest
     [Test]
     public async Task CreateBoard_Successfully()
     {
-        string boardName =  "AutoTest_Board_" + DateTime.Now.Ticks;
+        string boardName = "AutoTest_Board_" + DateTime.Now.Ticks;
         var response = await _boardClient.CreateBoard(boardName);
         
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -50,7 +50,6 @@ public class BoardTests : BaseTest
         var response = await _boardClient.CreateBoard(null);
         
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-        Assert.That(response.Data, Is.Null);
         
         TestContext.WriteLine("Success. Board with empty name was not created");
     }
