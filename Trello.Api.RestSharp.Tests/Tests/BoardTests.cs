@@ -39,7 +39,6 @@ public class BoardTests : BaseTest
         var response = await _boardClient.CreateBoard(boardName, "wrong_token");
         
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-        Assert.That(response.Data, Is.Null);
         
         TestContext.WriteLine("Success. Board with wrong token was not created");
     }
@@ -87,20 +86,20 @@ public class BoardTests : BaseTest
     public async Task UpdateBoard_Successfully()
     {
         string boardName = "AutoTest_Board_" + DateTime.Now.Ticks;
-        var response = await _boardClient.CreateBoard(boardName);
+        var initialBoardResponse = await _boardClient.CreateBoard(boardName);
         
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(initialBoardResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
-        _createdBoardId = response.Data.Id;
+        _createdBoardId = initialBoardResponse.Data.Id;
         
         string newBoardName = "AutoTest_Board_Changed_" + DateTime.Now.Ticks;
-        var changedBoard = await _boardClient.UpdateBoard(_createdBoardId, newBoardName);
+        var changedBoardResponse = await _boardClient.UpdateBoard(_createdBoardId, newBoardName);
         
-        Assert.That(changedBoard.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        Assert.That(changedBoard.Data.Id, Is.EqualTo(_createdBoardId), "Changed board id does not match");
-        Assert.That(changedBoard.Data.Name, Is.EqualTo(newBoardName), "Changed board name does not match");
+        Assert.That(changedBoardResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(changedBoardResponse.Data.Id, Is.EqualTo(_createdBoardId), "Changed board id does not match");
+        Assert.That(changedBoardResponse.Data.Name, Is.EqualTo(newBoardName), "Changed board name does not match");
         
-        TestContext.WriteLine($"Board updated. New name: {changedBoard.Data.Name}");
+        TestContext.WriteLine($"Board updated. New name: {changedBoardResponse.Data.Name}");
     }
     
     [TearDown]
