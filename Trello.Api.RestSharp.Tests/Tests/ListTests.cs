@@ -37,6 +37,53 @@ public class ListTests : BaseTest
         TestContext.WriteLine($"List created. Name: {listResponse.Data.Name}, Id: {listResponse.Data.Id}, BoardId: {listResponse.Data.IdBoard}");
     }
     
+    [Test]
+    public async Task GetList_Successfully()
+    {
+        string boardName = "AutoTest_Board_" + DateTime.Now.Ticks;
+        var boardResponse = await _boardClient.CreateBoard(boardName);
+        
+        Assert.That(boardResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        _createdBoardId = boardResponse.Data.Id;
+        
+        string listName = "AutoTest_List_" + DateTime.Now.Ticks;
+        var listResponse = await _listClient.CreateList(listName, _createdBoardId);
+        
+        Assert.That(listResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        var retrievedList = await _listClient.GetList(listResponse.Data.Id);
+        
+        Assert.That(retrievedList.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(retrievedList.Data.Id, Is.EqualTo(listResponse.Data.Id), "Retrieved list id does not match");
+        Assert.That(retrievedList.Data.Name, Is.EqualTo(listName), "Retrieved list name does not match");
+        
+        TestContext.WriteLine($"List {retrievedList.Data.Name} found");
+    }
+
+    [Test]
+    public async Task UpdateList_Successfully()
+    {
+        string boardName = "AutoTest_Board_" + DateTime.Now.Ticks;
+        var boardResponse = await _boardClient.CreateBoard(boardName);
+        
+        Assert.That(boardResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        _createdBoardId = boardResponse.Data.Id;
+        
+        string listName = "AutoTest_List_" + DateTime.Now.Ticks;
+        var initialListResponse = await _listClient.CreateList(listName, _createdBoardId);
+        
+        string newListName = "AutoTest_List_Changed_" + DateTime.Now.Ticks;
+        var changedListResponse = await _listClient.UpdateList(initialListResponse.Data.Id, newListName);
+        
+        Assert.That(changedListResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(changedListResponse.Data.Id, Is.EqualTo(initialListResponse.Data.Id), "Changed list id does not match");
+        Assert.That(changedListResponse.Data.Name, Is.EqualTo(newListName), "Changed list name does not match");
+        
+        TestContext.WriteLine($"List updated. New name: {changedListResponse.Data.Name}");
+    }
+    
     [TearDown]
     public async Task CleanUp()
     {

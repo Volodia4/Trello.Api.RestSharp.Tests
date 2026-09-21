@@ -26,4 +26,23 @@ public class ListClient
         
         return await _client.ExecuteAsync<ListModel>(request);
     }
+
+    public async Task<RestResponse<ListModel>> GetList(string listId)
+    {
+        var request = new RestRequest($"/1/lists/{listId}", Method.Get);
+        request.AddQueryParameter("key", _key);
+        request.AddQueryParameter("token", _token);
+        
+        return await _client.ExecuteAsync<ListModel>(request);
+    }
+
+    public async Task<RestResponse<ListModel>> UpdateList(string listId, string newName, string customToken = null)
+    {
+        var request = new RestRequest($"/1/lists/{listId}", Method.Put);
+        request.AddQueryParameter("name", newName);
+        request.AddQueryParameter("key", _key);
+        request.AddQueryParameter("token", customToken ?? _token);
+        
+        return await _client.ExecuteAsync<ListModel>(request);
+    }
 }
