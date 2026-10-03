@@ -36,6 +36,41 @@ public class ListTests : BaseTest
         
         TestContext.WriteLine($"List created. Name: {listResponse.Data.Name}, Id: {listResponse.Data.Id}, BoardId: {listResponse.Data.IdBoard}");
     }
+
+    [Test]
+    public async Task CreateList_WrongId()
+    {
+        string boardName = "AutoTest_Board_" + DateTime.Now.Ticks;
+        var boardResponse = await _boardClient.CreateBoard(boardName);
+        
+        Assert.That(boardResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        _createdBoardId = boardResponse.Data.Id;
+        
+        string listName = "AutoTest_List_" + DateTime.Now.Ticks;
+        var listResponse = await _listClient.CreateList(listName, "123456789012345678901234");
+        
+        Assert.That(listResponse.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        
+        TestContext.WriteLine($"Success. List with empty id was not created");
+    }
+
+    [Test]
+    public async Task CreateList_EmptyName()
+    {
+        string boardName = "AutoTest_Board_" + DateTime.Now.Ticks;
+        var boardResponse = await _boardClient.CreateBoard(boardName);
+        
+        Assert.That(boardResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        _createdBoardId = boardResponse.Data.Id;
+        
+        var listResponse = await _listClient.CreateList(null, _createdBoardId);
+        
+        Assert.That(listResponse.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        
+        TestContext.WriteLine($"Success. List with empty name was not created");
+    }
     
     [Test]
     public async Task GetList_Successfully()
@@ -59,6 +94,28 @@ public class ListTests : BaseTest
         Assert.That(retrievedList.Data.Name, Is.EqualTo(listName), "Retrieved list name does not match");
         
         TestContext.WriteLine($"List {retrievedList.Data.Name} found");
+    }
+
+    [Test]
+    public async Task GetList_WrongId()
+    {
+        string boardName = "AutoTest_Board_" + DateTime.Now.Ticks;
+        var boardResponse = await _boardClient.CreateBoard(boardName);
+        
+        Assert.That(boardResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        _createdBoardId = boardResponse.Data.Id;
+        
+        string listName = "AutoTest_List_" + DateTime.Now.Ticks;
+        var listResponse = await _listClient.CreateList(listName, _createdBoardId);
+        
+        Assert.That(listResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        var retrievedList = await _listClient.GetList("123456789012345678901234");
+        
+        Assert.That(retrievedList.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        
+        TestContext.WriteLine($"Success. List with wrong id was not found");
     }
 
     [Test]
