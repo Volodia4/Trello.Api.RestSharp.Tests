@@ -28,4 +28,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include=".github\workflows\api-tests.yml" />
+    </ItemGroup>
+
 </Project>
