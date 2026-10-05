@@ -1,0 +1,37 @@
+name: Trello API Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Generate appsettings.json
+        run: |
+          echo '{
+            "Trello": {
+              "BaseUrl": "https://api.trello.com",
+              "Key": "${{ secrets.TRELLO_KEY }}",
+              "Token": "${{ secrets.TRELLO_TOKEN }}"
+            }
+          }' > Trello.Api.RestSharp.Tests/appsettings.json
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build and run tests
+        run: dotnet test --no-restore --verbosity normal
