@@ -96,6 +96,52 @@ public class CardTests : BaseTest
         
         TestContext.WriteLine($"Card updated. New name: {changedCardResponse.Data.Name}, Desc: {changedCardResponse.Data.Desc}");
     }
+
+    [Test]
+    public async Task CreateCard_WrongToken()
+    {
+        string boardName = "AutoTest_Board_" + DateTime.Now.Ticks;
+        var boardResponse = await _boardClient.CreateBoard(boardName);
+        Assert.That(boardResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        _createdBoardId = boardResponse.Data.Id;
+        
+        string listName = "AutoTest_List_" + DateTime.Now.Ticks;
+        var listResponse = await _listClient.CreateList(listName, _createdBoardId);
+        Assert.That(listResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        string cardName = "AutoTest_Card_WrongToken_" + DateTime.Now.Ticks;
+        var cardResponse = await _cardClient.CreateCard(cardName, listResponse.Data.Id, "invalid_token_123");
+        
+        Assert.That(cardResponse.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        
+        TestContext.WriteLine($"Success. Card with wrong token was not created");
+    }
+
+    [Test]
+    public async Task CreateCard_WrongListId()
+    {
+        string boardName = "AutoTest_Board_" + DateTime.Now.Ticks;
+        var boardResponse = await _boardClient.CreateBoard(boardName);
+        Assert.That(boardResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        _createdBoardId = boardResponse.Data.Id;
+        
+        string cardName = "AutoTest_Card_" + DateTime.Now.Ticks;
+        var cardResponse = await _cardClient.CreateCard(cardName, "123456789012345678901234");
+        
+        Assert.That(cardResponse.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        
+        TestContext.WriteLine($"Success. Card with wrong list id was not created");
+    }
+
+    [Test]
+    public async Task GetCard_WrongId()
+    {
+        var response = await _cardClient.GetCard("123456789012345678901234");
+        
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        
+        TestContext.WriteLine("Success. Card with wrong id was not found");
+    }
     
     [TearDown]
     public async Task CleanUp()
